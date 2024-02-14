@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import cloudinary_storage
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -41,7 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'products',
     'accounts',
-    'home'
+    'home',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -154,3 +157,10 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'fa20-bcs-077@cuilahore.edu.pk'
 
 EMAIL_HOST_PASSWORD = 'sufiyan1!'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dgnwqztxt',
+    'API_KEY': '268823943384257',
+    'API_SECRET': 'NTz5BwghOIFeFl3EHpPiNaC_qas'
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'

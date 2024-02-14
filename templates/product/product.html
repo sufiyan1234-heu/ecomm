@@ -10,11 +10,11 @@
             <aside class="col-md-6">
     <article class="gallery-wrap"> 
     <div class="img-big-wrap">
-      <div> <a href="#"><img src="/media/{{product.images.first.image}}"></a></div>
+      <div> <a href="#"><img src="{{product.images.first.image.url}}"></a></div>
     </div> <!-- slider-product.// -->
     <div class="thumbs-wrap">
       {% for image in product.images.all %}
-      <a href="#" class="item-thumb"> <img src="/media/{{image.image}}"></a>
+      <a href="#" class="item-thumb"> <img src="{{image.image.url}}"></a>
       {% endfor %}
       
     </div> <!-- slider-nav.// -->
