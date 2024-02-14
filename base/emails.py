@@ -18,7 +18,7 @@ def send_account_activation_email(email, email_token):
     try:
         subject = "Your account activation"
         email_from = settings.EMAIL_HOST_USER
-        message = f"Hi, click on the link to activate your account http://127.0.0.1:8000/user/activate/{email_token}"
+        message = f"Hi, click on the link to activate your account https://ecomm-ecru-two.vercel.app/user/activate/{email_token}"
 
         # Use EmailMessage for more control
         email_message = EmailMessage(subject, message, email_from, [email])
