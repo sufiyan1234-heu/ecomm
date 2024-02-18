@@ -85,7 +85,6 @@ def add_to_cart(request, uid):
     cart_item = CartItem.objects.create(cart=cart, product=product)
 
     if variant:
-        variant = request.GET.get('variant')
         size_variant = SizeVariant.objects.get(size_name=variant)
         cart_item.size_variant = size_variant
         cart_item.save()
