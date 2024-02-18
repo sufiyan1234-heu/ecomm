@@ -94,5 +94,13 @@ def add_to_cart(request, uid):
 
 
 def cart(request):
-    context = {'cart': Cart.objects.filter(is_paid=False, user=request.user)}
-    return render(request, 'accounts/cart.html')
+    try:
+        context = {'cart': Cart.objects.get(is_paid=False, user=request.user)}
+        print(context['cart'])
+    except Cart.DoesNotExist:
+        context = {'cart': None}
+
+    if request.method == 'POST':
+        pass
+
+    return render(request, 'accounts/cart.html', context=context)

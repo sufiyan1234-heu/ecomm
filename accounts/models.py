@@ -7,7 +7,7 @@ import uuid
 from base.emails import send_account_activation_email
 from products.models import Product
 from products.models import ColorVariant
-from products.models import SizeVariant
+from products.models import SizeVariant, Coupon
 # Create your models here.
 
 
@@ -25,10 +25,26 @@ class Profile(BaseModel):
 class Cart(BaseModel):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='carts')
+    coupon = models.ForeignKey(
+        Coupon, on_delete=models.SET_NULL, blank=True, null=True)
     is_paid = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.user.first_name
+
+    def get_cart_total(self):
+        cart_items = self.cart_items.all()
+        price = []
+        for cart_item in cart_items:
+            price.append(cart_item.product.price)
+            if cart_item.color_variant:
+                color_variant_price = cart_item.color_variant.price
+                price.append(color_variant_price)
+            if cart_item.size_variant:
+                size_variant_price = cart_item.size_variant.price
+                price.append(size_variant_price)
+        print(price)
+        return sum(price)
 
 
 class CartItem(BaseModel):
