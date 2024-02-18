@@ -98,7 +98,16 @@ DATABASES = {
         'PORT': '16153',
     }
 }
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'railway',
+#         'USER': 'root',
+#         'PASSWORD': 'bhD12dBFGg2CCH5BGaGeghBC4CHHAAhA',
+#         'HOST': 'monorail.proxy.rlwy.net',
+#         'PORT': '55583',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

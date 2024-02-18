@@ -5,6 +5,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import uuid
 from base.emails import send_account_activation_email
+from products.models import Product
+from products.models import ColorVariant
+from products.models import SizeVariant
 # Create your models here.
 
 
@@ -14,6 +17,40 @@ class Profile(BaseModel):
     is_email_verified = models.BooleanField(default=False)
     email_token = models.CharField(max_length=100, null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile')
+
+    def get_cart_count(self):
+        return CartItem.objects.filter(cart__is_paid=False, cart__user=self.user).count()
+
+
+class Cart(BaseModel):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='carts')
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return self.user.first_name
+
+
+class CartItem(BaseModel):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE,
+                             related_name='cart_items')
+    product = models.ForeignKey(
+        Product, on_delete=models.SET_NULL, related_name='cart_items', null=True, blank=True)
+    color_variant = models.ForeignKey(
+        ColorVariant, on_delete=models.SET_NULL, null=True, blank=True)
+    size_variant = models.ForeignKey(
+        SizeVariant, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def get_product_price(self):
+        price = [self.product.price]
+
+        if self.color_variant:
+            color_variant_price = self.color_variant.price
+            price.append(color_variant_price)
+        if self.size_variant:
+            size_variant_price = self.size_variant.price
+            price.append(size_variant_price)
+        return sum(price)
 
 
 @receiver(post_save, sender=User)
