@@ -48,6 +48,8 @@ class Cart(BaseModel):
             if self.coupon.minimum_amount < sum(price):
                 return sum(price) - self.coupon.discount_price
 
+        return sum(price)
+
     def get_cart_total_without(self):
         cart_items = self.cart_items.all()
         price = []
