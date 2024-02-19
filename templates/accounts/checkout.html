@@ -32,7 +32,7 @@
           </li>
           {% endfor %}
           
-          {% if user.profile.get_cart_count > 0 and cart.coupon %}
+          {% if user.profile.get_cart_count > 0 or cart.coupon %}
           <li class="list-group-item d-flex justify-content-between bg-light">
             <div class="text-success">
               <h6 class="my-0">Coupon code</h6>
