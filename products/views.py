@@ -8,7 +8,7 @@ def get_products(request, slug):
     try:
         product = Product.objects.get(slug=slug)
 
-        context = {'product': product}
+        context = {'product': product, 'is_product_detail_page': True}
         if request.GET.get('size'):
             size = request.GET.get('size')
             price = product.get_product_by_size(size)

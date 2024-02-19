@@ -96,6 +96,7 @@
               <!-- brand-wrap.// -->
             </div>
             <div class="col-lg-6 col-sm-12">
+              {% if not is_product_detail_page %}
               <form action="#" class="search">
                 <div class="input-group w-100">
                   <input
@@ -110,6 +111,7 @@
                   </div>
                 </div>
               </form>
+              {% endif %}
               <!-- search-wrap .end// -->
             </div>
             <!-- col.// -->
@@ -125,12 +127,23 @@
                   <a href="#" class="icon icon-sm rounded-circle border"
                     ><i class="fa fa-user"></i
                   ></a>
+                  {% if user.is_authenticated %}
                   <div class="text">
                     <span class="text-muted">Welcome! {{request.user.first_name}}</span>
+
                     <div>
-                      <a href="/user/login">Sign in</a> |
-                      <a href="/user/register">Register</a>
+                      <a href="{% url 'logout' %}">Logout</a>
                     </div>
+                    {% else %}
+                    <div class="text">
+                    <span class="text-muted">Please Login or signup</span>
+                    <div class="my-1">
+                      <a href="{% url 'login' %}">Sign in</a> |
+                      <a href="{% url 'register' %}">Register</a>
+                    </div>
+                    </div>
+    {% endif %}
+                    
                   </div>
                 </div>
               </div>

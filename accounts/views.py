@@ -1,40 +1,26 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
+
+from django.contrib.auth.models import User
 from .models import Profile, Cart, CartItem
 from products.models import Product, SizeVariant, Coupon
-
-
-# Create your views here.
 
 
 def login_page(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        user_obj = User.objects.filter(username=email)
-        print(user_obj)
-        print(password, email)
+        user = authenticate(username=email, password=password)
 
-        if not user_obj.exists():
-            messages.warning(request, 'Account not found.')
-            return HttpResponseRedirect(request.path_info)
-
-        if not user_obj[0].profile.is_email_verified:
-            messages.warning(request, 'Please verify your email.')
-            return HttpResponseRedirect(request.path_info)
-
-        user_obj = authenticate(username=email, password=password)
-        print(user_obj)
-
-        if user_obj:
-            login(request, user_obj)
+        if user and user.profile.is_email_verified:
+            login(request, user)
             return redirect('/')
-
-        messages.warning(request, 'Invalid password provided ')
-        return HttpResponseRedirect(request.path_info)
+        else:
+            messages.warning(
+                request, 'Invalid credentials or unverified email.')
+            return HttpResponseRedirect(request.path_info)
     return render(request, 'accounts/login.html')
 
 
@@ -93,34 +79,38 @@ def add_to_cart(request, uid):
 
 
 def cart(request):
+    if request.user.is_authenticated:
+        cart_obj = Cart.objects.get(is_paid=False, user=request.user)
 
-    cart_obj = Cart.objects.get(is_paid=False, user=request.user)
+        if request.method == 'POST':
+            coupon = request.POST.get('coupon')
+            coupon_obj = Coupon.objects.filter(coupon_code__icontains=coupon)
 
-    if request.method == 'POST':
-        coupon = request.POST.get('coupon')
-        coupon_obj = Coupon.objects.filter(coupon_code__icontains=coupon)
+            if not coupon_obj.exists():
+                messages.warning(request, 'Invalid Coupon code')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        if not coupon_obj.exists():
-            messages.warning(request, 'Invalid Coupon code')
+            if cart_obj.coupon:
+                messages.warning(request, 'coupon already exists')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            if cart_obj.get_cart_total() < coupon_obj[0].minimum_amount:
+                messages.warning(
+                    request, f'coupon minimum amount not met must be greater the {coupon_obj[0].minimum_amount}')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            if coupon_obj[0].is_expired:
+                messages.warning(request, 'coupon expired')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            cart_obj.coupon = coupon_obj[0]
+            cart_obj.save()
+            messages.success(request, 'coupon applied successfully')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        if cart_obj.coupon:
-            messages.warning(request, 'coupon already exists')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        if cart_obj.get_cart_total() < coupon_obj[0].minimum_amount:
-            messages.warning(
-                request, f'coupon minimum amount not met must be greater the {coupon_obj[0].minimum_amount}')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        if coupon_obj[0].is_expired:
-            messages.warning(request, 'coupon expired')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-        cart_obj.coupon = coupon_obj[0]
-        cart_obj.save()
-        messages.success(request, 'coupon applied successfully')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        messages.warning(
+            request, f'Login First')
+        return redirect('/user/login')
 
     context = {'cart': cart_obj}
 
@@ -146,3 +136,14 @@ def remove_cart(request, cart_item_uid):
         print(e)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def checkout_cart(request, cart_item_uid):
+    cart_obj = Cart.objects.get(uid=cart_item_uid)
+    context = {'cart': cart_obj}
+    return render(request, 'accounts/checkout.html', context=context)
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('/user/login')

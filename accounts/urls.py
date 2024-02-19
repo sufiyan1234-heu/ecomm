@@ -6,7 +6,7 @@ from accounts.views import activate_email
 from accounts.views import cart
 from accounts.views import add_to_cart
 from accounts.views import remove_coupon
-from accounts.views import remove_cart
+from accounts.views import remove_cart, checkout_cart, logoutUser
 
 
 urlpatterns = [
@@ -16,6 +16,8 @@ urlpatterns = [
     path('cart/', cart, name="cart"),
     path('add_to_cart/<uid>/', add_to_cart, name="add_to_cart"),
     path('remove-coupon/<cart_id>/', remove_coupon, name="remove_coupon"),
-    path('remove-cart/<cart_item_uid>/', remove_cart, name="remove_cart")
+    path('remove-cart/<cart_item_uid>/', remove_cart, name="remove_cart"),
+    path('checkout/<cart_item_uid>/', checkout_cart, name="checkout"),
+    path('logout/', logoutUser, name="logout"),
 
 ]

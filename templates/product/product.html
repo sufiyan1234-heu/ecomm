@@ -99,9 +99,12 @@
             </div> 
             {% endif %}<!-- col.// -->
         </div> <!-- row.// -->
-    
+        {% if user.is_authenticated %}
         <a href="#" class="btn  btn-primary"> Buy now </a>
         <a href="{% url 'add_to_cart' product.uid %}?size={{selected_size}}" class="btn  btn-outline-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+        {% else %}
+        <a href="/login" class="btn  btn-primary"> Signin or Register </a>
+        {% endif %}
     </article> <!-- product-info-aside .// -->
             </main> <!-- col.// -->
         </div> <!-- row.// -->
