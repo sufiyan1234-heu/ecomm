@@ -72,3 +72,6 @@ class Coupon(BaseModel):
     is_expired = models.BooleanField(default=False)
     discount_price = models.IntegerField(default=100)
     minimum_amount = models.IntegerField(default=500)
+
+    def __str__(self) -> str:
+        return self.coupon_code
