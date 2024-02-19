@@ -133,3 +133,16 @@ def remove_coupon(request, cart_id):
     cart.save()
     messages.success(request, 'coupon removed successfully')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def remove_cart(request, cart_item_uid):
+    try:
+        cart_item = CartItem.objects.get(uid=cart_item_uid)
+        cart_item.delete()
+        messages.success(request, 'Cart item removed successfully')
+    except CartItem.DoesNotExist:
+        messages.error(request, 'Cart item not found')
+    except Exception as e:
+        print(e)
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
